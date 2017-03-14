@@ -6,6 +6,9 @@ import (
 	"unicode"
 	"unicode/utf8"
 	"math"
+	"bytes"
+	"io"
+	"strconv"
 )
 
 type polar struct {
@@ -185,6 +188,122 @@ func StringFmtDebug() {
 
 }
 
+func SimpleSimplifyWhitespace(s string) string {
+	return strings.Join(strings.Fields(strings.TrimSpace(s)), " ")
+}
+
+func SimpleSimplifyWhitespace2(s string) string {
+	var buffer bytes.Buffer
+	skip := true
+	for _, char := range s {
+		if unicode.IsSpace(char) {
+			if !skip {
+				buffer.WriteRune(' ')
+				skip = true
+			}
+		} else {
+			buffer.WriteRune(char)
+			skip = false
+		}
+	}
+	s = buffer.String()
+	if skip && len(s) > 0 {
+		s = s[:len(s)-1]
+	}
+	return s
+}
+
+func StringBagstrings() {
+	names := "ddd,aasd,dadxq,aada,,ada,azza,aa"
+	fmt.Print("|")
+	for _, name := range strings.SplitAfter(names, ",") {
+		fmt.Printf("%s|", name)
+	}
+	fmt.Println()
+
+	for _, record := range []string{"aaaa ssss*121212*2222", "daaaa cadada\t111\t11sss", "sdad cxccc gdgfg|1775|1814"} {
+		fmt.Println(strings.FieldsFunc(record, func(char rune) bool {
+			switch char {
+			case '\t', '*', '|':
+				return true
+			}
+			return false
+		}))
+	}
+
+	names = "adada\tdada\tadaa\t\t\tcaxaxaxa\t\tdadaaadad\tldllff"
+	names = strings.Replace(names, "\t", " ", -1)
+	fmt.Printf("|%s|\n", names)
+	fmt.Printf("|%s|\n", SimpleSimplifyWhitespace2(names))
+
+	asciiOnly := func(char rune) rune {
+		if char > 127 {
+			return '?'
+		}
+		return char
+	}
+	fmt.Println(strings.Map(asciiOnly, "哈哈哈zzzzddd中文"))
+
+	reader := strings.NewReader("daa哈迭代aa")
+	for {
+		char, size, err := reader.ReadRune()
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			panic(err)
+		}
+		fmt.Printf("%U '%c' %d: % X\n", char, char, size, []byte(string(char)))
+	}
+}
+
+func Stringstrconv() {
+	for _, truth := range []string{"1", "t", "TRUE", "false", "F", "0", "5"} {
+		if b, err := strconv.ParseBool(truth); err != nil {
+			fmt.Printf("\n{%v}", err)
+		} else {
+			fmt.Print(b, " ")
+		}
+	}
+	fmt.Println()
+
+	x, err := strconv.ParseFloat("-99.7", 64)
+	fmt.Printf("%8T %6v %v\n", x, x, err)
+	y, err := strconv.ParseInt("71309", 10, 0)
+	fmt.Printf("%8T %6v %v\n", y, y, err)
+	z, err := strconv.Atoi("71309")
+	fmt.Printf("%8T %6v %v\n", z, z, err)
+
+	s := strconv.FormatBool(z > 100)
+	fmt.Println(s)
+	i, err := strconv.ParseInt("0xDEED", 0, 32)
+	fmt.Println(i, err)
+	j, err := strconv.ParseInt("0707", 0, 32)
+	fmt.Println(j, err)
+	k, err := strconv.ParseInt("10111010001", 2, 32)
+	fmt.Println(k, err)
+
+	l := 16769023
+	fmt.Println(strconv.Itoa(l))
+	fmt.Println(strconv.FormatInt(int64(l), 10))
+	fmt.Println(strconv.FormatInt(int64(l), 2))
+	fmt.Println(strconv.FormatInt(int64(l), 16))
+
+	s = "这是中文 aaaa ddaad ddaaq vvva aa.\n"
+	quoted := strconv.Quote(s)
+	fmt.Println(quoted)
+	fmt.Println(strconv.Unquote(quoted))
+
+}
+
+func IsHexDigit(char rune) bool {
+	return unicode.Is(unicode.ASCII_Hex_Digit, char)
+}
+
+func StringFmtunicode() {
+	fmt.Println(IsHexDigit('8'), IsHexDigit('x'), IsHexDigit('X'), IsHexDigit('b'), IsHexDigit('B'))
+}
+
 func main() {
 	//stringoperators()
 	//charAndString()
@@ -197,5 +316,8 @@ func main() {
 	//StringFmtString()
 	//StringFmtFloat()
 	//StringFmtSlice()
-	StringFmtDebug()
+	//StringFmtDebug()
+	//StringBagstrings()
+	//Stringstrconv()
+	StringFmtunicode()
 }
