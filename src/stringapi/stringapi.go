@@ -8,6 +8,10 @@ import (
 	"math"
 )
 
+type polar struct {
+	radius, o float64
+}
+
 func stringoperators() {
 	book := "The Sprit Level" + "By Richard Wilkinson"
 	book += " and Kate Pickett"
@@ -54,9 +58,7 @@ func StringIndex2() {
 }
 
 func StringFmtPrint() {
-	type polar struct {
-		radius, o float64
-	}
+
 	p := polar{8.32, .49}
 	fmt.Print(-18.5, 17, "Elephant", -8+.7i, 0x3c7, '\u03C7', "a", "b", p)
 	fmt.Println()
@@ -117,7 +119,7 @@ func Humanize(amount float64, width, decimals int, pad, separator rune) string {
 	return number
 }
 
-func stringFmtFloat() {
+func StringFmtFloat() {
 	for _, x := range [] float64{-.258, 7194.84, -60897162.0218, 1.500089e-8} {
 		fmt.Printf("|%20.5e|%20.5f|%s|\n", x, x, Humanize(x, 20, 5, '*', ','))
 	}
@@ -127,6 +129,62 @@ func stringFmtFloat() {
 	}
 
 }
+
+func StringFmtSlice() {
+	slogn := "beg 你好iiii哈哈"
+	fmt.Printf("%s\n%q\n%+q\n%#q\n", slogn, slogn, slogn, slogn)
+
+	chars := []rune(slogn)
+	fmt.Printf("%x\n%#x\n%#X\n", chars, chars, chars)
+
+	bytes := []byte(slogn)
+	fmt.Printf("%s\n%x\n%X\n% X\n%v\n", bytes, bytes, bytes, bytes, bytes)
+
+	s := "Dare to be naive"
+	fmt.Printf("|%22s|%-22s|%10s|\n", s, s, s);
+	i := strings.Index(s, "n")
+	fmt.Printf("|%.10s|%.*s|%-22.10s|%s|\n", s, i, s, s, s)
+}
+
+func StringFmtDebug() {
+	p := polar{-83.40, 71.60}
+	fmt.Printf("|%T|%v|%#v|\n", p, p, p)
+	fmt.Printf("|%T|%v|%t|\n", false, false, false)
+	fmt.Printf("|%T|%v|%d|\n", 7607, 7607, 7607)
+	fmt.Printf("|%T|%v|%f|\n", math.E, math.E, math.E)
+	fmt.Printf("|%T|%v|%f|\n", 5+7i, 5+7i, 5+7i)
+
+	s := "Relativity"
+	fmt.Printf("|%T|\"%v\"\"%s\"|%q|\n", s, s, s, s)
+
+	s = "Alias是Synonym"
+	chars := []rune(s)
+	bytes := []byte(s)
+	fmt.Printf("%T: %v\n%T: %v\n", chars, chars, bytes, bytes)
+
+	i := 5
+	f := -48.3124
+	s = "this is string"
+	fmt.Printf("|%p -> %d|%p -> %f|%#p -> %s\n", &i, i, &f, f, &s, s)
+
+	fmt.Println([]float64{math.E, math.Pi, math.Phi})
+	fmt.Printf("%v\n", []float64{math.E, math.Pi, math.Phi})
+	fmt.Printf("%#v\n", []float64{math.E, math.Pi, math.Phi})
+	fmt.Printf("%.5f\n", []float64{math.E, math.Pi, math.Phi})
+
+	fmt.Printf("%q\n", []string{"Software patents", "kill", "innovation"})
+	fmt.Printf("%v\n", []string{"Software patents", "kill", "innovation"})
+	fmt.Printf("%#v\n", []string{"Software patents", "kill", "innovation"})
+	fmt.Printf("%17s\n", []string{"Software patents", "kill", "innovation"})
+
+	fmt.Printf("%v\n", map[int]string{1: "A", 2: "B", 3: "C", 4: "D"})
+	fmt.Printf("%#v\n", map[int]string{1: "A", 2: "B", 3: "C", 4: "D"})
+	fmt.Printf("%v\n", map[int]string{1: "A", 2: "B", 3: "C", 4: "D"})
+	fmt.Printf("%#v\n", map[int]int{1: 1, 2: 2, 3: 4, 4: 8})
+	fmt.Printf("%04b\n", map[int]int{1: 1, 2: 2, 3: 4, 4: 8})
+
+}
+
 func main() {
 	//stringoperators()
 	//charAndString()
@@ -137,5 +195,7 @@ func main() {
 	//StringFmtBool()
 	//StringFmtInt()
 	//StringFmtString()
-	stringFmtFloat()
+	//StringFmtFloat()
+	//StringFmtSlice()
+	StringFmtDebug()
 }
