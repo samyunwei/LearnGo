@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"io"
 	"strconv"
+	"regexp"
 )
 
 type polar struct {
@@ -253,7 +254,7 @@ func StringBagstrings() {
 			}
 			panic(err)
 		}
-		fmt.Printf("%U '%c' %d: % X\n", char, char, size, []byte(string(char)))
+		fmt.Printf("%U %c %d: % X\n", char, char, size, []byte(string(char)))
 	}
 }
 
@@ -304,6 +305,83 @@ func StringFmtunicode() {
 	fmt.Println(IsHexDigit('8'), IsHexDigit('x'), IsHexDigit('X'), IsHexDigit('b'), IsHexDigit('B'))
 }
 
+func StringRegxReplace() {
+	names := []string{"aaaa dddd zzz aaa dddd cadaadd"}
+	println("Regx1")
+	nameRx := regexp.MustCompile(`(\pL+\.?(?:\s+\pL+\.?)*)\s+(\pL+)`)
+	for i := 0; i < len(names); i++ {
+		names[i] = nameRx.ReplaceAllString(names[i], "${2},${1}")
+		println(names[i])
+	}
+
+	names = []string{"aaaa dddd zzz aaa dddd cadaadd"}
+	println("Regx2")
+	nameRx2 := regexp.MustCompile(`(?P<forename>\pL+\.?(?:\s+\pL+\.?)*)\s+(?P<surename>\pL+)`)
+	for i := 0; i < len(names); i++ {
+		names[i] = nameRx2.ReplaceAllString(names[i], "${surename} ${forename}")
+		println(names[i])
+	}
+}
+
+func StringRegxMatchWord() {
+	text := "dada aaa aaa cca dada ccc aaa xxx"
+	wordRx := regexp.MustCompile(`\w+`)
+	if mathches := wordRx.FindAllString(text, -1); mathches != nil {
+		previous := ""
+		for _, match := range mathches {
+			if match == previous {
+				fmt.Println("Duplicate word:", match)
+			}
+			previous = match
+		}
+	}
+}
+
+func StringRegxMap() {
+	lines := " a : vv"
+	valueForKey := make(map[string]string)
+	keyValueRx := regexp.MustCompile(`\s*([[:alpha:]]\w*)\s* :\s*(.+)`)
+	if matches := keyValueRx.FindAllStringSubmatch(lines, -1); matches != nil {
+		for _, match := range matches {
+			valueForKey[match[1]] = strings.TrimRight(match[2], `\t`)
+		}
+		fmt.Println(valueForKey)
+	}
+
+}
+
+func StringRegxXML() {
+	attribs := `a="name"`
+	atttName := "a"
+	attrValueRx := regexp.MustCompile(regexp.QuoteMeta(atttName) + `=(?:"([^"]+)"|'([^']+)')`)
+	if indexes := attrValueRx.FindAllStringSubmatchIndex(attribs, -1); indexes != nil {
+		for _, positions := range indexes {
+			start, end := positions[2], positions[3]
+			if start == -1 {
+				start, end = positions[4], positions[5]
+			}
+			fmt.Printf("`%s`\n", attribs[start:end])
+		}
+	} else {
+		println("match error")
+	}
+}
+
+func StringRegxSimplifyWhitespace() {
+	text := "aaa       ddd        "
+	SimpleSimplifyWhitespaceRx := regexp.MustCompile(`[\s\p{Zl}\p{Zp}]+`)
+	text = strings.TrimSpace(SimpleSimplifyWhitespaceRx.ReplaceAllLiteralString(text, " "))
+	println(text)
+}
+
+func StringRegxReplaceByfunc() {
+	text := "aaaa bbbbb"
+	replacerx := regexp.MustCompile(`a`)
+	text = replacerx.ReplaceAllStringFunc(text, func(s string) string {
+		return string("s")
+	})
+	println(text)
+}
 func main() {
 	//stringoperators()
 	//charAndString()
@@ -319,5 +397,11 @@ func main() {
 	//StringFmtDebug()
 	//StringBagstrings()
 	//Stringstrconv()
-	StringFmtunicode()
+	//StringFmtunicode()
+	//StringRegxReplace()
+	//StringRegxMatchWord()
+	//StringRegxMap()
+	//StringRegxXML()
+	//StringRegxSimplifyWhitespace()
+	StringRegxReplaceByfunc()
 }
