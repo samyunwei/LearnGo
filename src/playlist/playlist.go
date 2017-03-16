@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"io/ioutil"
+	"regexp"
 )
 
 type Song struct {
@@ -59,6 +60,36 @@ func readM3uPlaylist(data string) (songs []Song) {
 	return songs
 }
 
+func readPlsPlaylist(data string) (songs []Song) {
+	var song Song
+	typematch := regexp.MustCompile(`(?P<type>\w+)=(?P<attrval>.+)`)
+	for _, line := range strings.Split(data, "\n") {
+		line = strings.TrimSpace(line)
+		if line == "[playlist]" {
+			continue
+		}
+		if res := typematch.FindStringSubmatch(line); res != nil {
+			if strings.HasPrefix(res[1], "File") {
+				song.Filename = res[2]
+			} else if strings.HasPrefix(res[1], "Title") {
+				song.Title = res[2]
+			} else {
+				if seconds, err := strconv.Atoi(res[2]); err != nil {
+					log.Printf("failed to read the duration for `%s`: %v\n", song.Title, err)
+					seconds = -1
+				} else {
+					song.Seconds = seconds
+				}
+			}
+		}
+		if song.Filename != "" && song.Title != "" && song.Seconds != 0 {
+			songs = append(songs, song)
+			song = Song{}
+		}
+	}
+	return songs
+}
+
 func writePlsPlaylist(songs []Song) {
 	fmt.Println("[playlist]")
 	for i, song := range songs {
@@ -70,15 +101,31 @@ func writePlsPlaylist(songs []Song) {
 	fmt.Printf("NumberOfEntries=%d\nVersion=2\n", len(songs))
 }
 
+func writem3ulist(songs []Song) {
+	fmt.Print("#EXTM3U\n")
+	for i, song := range songs {
+		i++
+		fmt.Printf("#EXTINF:%d,%s\n", song.Seconds, song.Title)
+		fmt.Printf("%s\n", song.Filename)
+	}
+	fmt.Printf("NumberOfEntries=%d\nVersion=2\n", len(songs))
+}
+
 func main() {
-	if len(os.Args) == 1 || !strings.HasSuffix(os.Args[1], `.m3u`) {
+	if len(os.Args) == 1 || !(strings.HasSuffix(os.Args[1], `.m3u`) || strings.HasSuffix(os.Args[1], `.pls`)) {
 		fmt.Printf("usage: %s <file.m3u>\n", filepath.Base(os.Args[0]))
 		os.Exit(0)
+	} else {
+
 	}
 	if rawBytes, err := ioutil.ReadFile(os.Args[1]); err != nil {
 		log.Fatal(err)
-	} else {
+	} else if strings.HasSuffix(os.Args[1], `.m3u or .pls`) {
+
 		songs := readM3uPlaylist(string(rawBytes))
 		writePlsPlaylist(songs)
+	} else {
+		songs := readPlsPlaylist(string(rawBytes))
+		writem3ulist(songs)
 	}
 }
