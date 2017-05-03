@@ -32,7 +32,7 @@ func parseExtinfLine(line string) (title string, seconds int) {
 	return title, seconds
 }
 
-func mapPlarformDirSeparator(char rune) rune {
+func mapPlatformDirSeparator(char rune) rune {
 	if char == '/' || char == '\\' {
 		return filepath.Separator
 	}
@@ -49,7 +49,7 @@ func readM3uPlaylist(data string) (songs []Song) {
 		if strings.HasPrefix(line, "#EXTINF:") {
 			song.Title, song.Seconds = parseExtinfLine(line)
 		} else {
-			song.Filename = strings.Map(mapPlarformDirSeparator, line)
+			song.Filename = strings.Map(mapPlatformDirSeparator, line)
 		}
 		if song.Filename != "" && song.Title != "" && song.Seconds != 0 {
 			songs = append(songs, song)
