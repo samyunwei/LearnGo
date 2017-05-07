@@ -88,9 +88,67 @@ func ptrapi6() {
 	fmt.Println(rect)
 }
 
+func arrayapi()  {
+	var buffer [20]byte
+	var grid1 [3][3]int
+	grid1[1][0],grid1[1][1],grid1[1][2] = 8,6,2
+	grid2 := [3][3]int{{4,3},{8,6,2}}
+	citites := [...]string{"Shanghai","Mumbau","Istanbul","Beijing"}
+	citites[len(citites)-1] = "Karachi"
+	fmt.Println("Type Len Contents")
+	fmt.Printf("%-8T %2d %v\n",buffer,len(buffer),buffer)
+	fmt.Printf("%-8T %2d %v\n",citites,len(citites),citites)
+	fmt.Printf("%-8T %2d %v\n",grid1,len(grid1),grid1)
+	fmt.Printf("%-8T %2d %v\n",grid2,len(grid2),grid2)
+
+}
+
+func sliceapi1()  {
+	s := []string{"A","B","C","D","E","F","G"}
+	t := s[:5]
+	u := s[3:len(s)-1]
+	fmt.Print(s,t,u)
+	u[1] = "X"
+	fmt.Println(s,t,u)
+}
+
+func sliceapi2(){
+	s := new([7]string)[:]
+	s[0],s[1],s[2],s[3],s[4],s[5],s[6] = "A","B","C","D","E","F","G"
+	buffer := make([]byte,20,60)
+	grid1 := make([][]int,3)
+	for i := range grid1{
+		grid1[i] = make([]int,3)
+	}
+	grid1[1][0],grid1[1][1],grid1[1][2] = 8,6,2
+	grid2 := [][]int{{4,3},{8,6,2},{0,0,0}}
+	citites := []string{"Shanghai","Mumbau","Istanbul","Beijing"}
+	citites[len(citites)-1] = "Karachi"
+	fmt.Println("Type Len Contents")
+	fmt.Printf("%-8T %2d %v\n",buffer,len(buffer),buffer)
+	fmt.Printf("%-8T %2d %v\n",citites,len(citites),citites)
+	fmt.Printf("%-8T %2d %v\n",grid1,len(grid1),grid1)
+	fmt.Printf("%-8T %2d %v\n",grid2,len(grid2),grid2)
+}
+
+func sliceapi3(){
+	s := []string{"A","B","C","D","E","F","G"}
+	t := s[2:6]
+	fmt.Println(t,s,"=",s[:4],"+",s[4:])
+	s[3] = "x"
+	t[len(t)-1] = "y"
+	fmt.Println(t,s,"=",s[:4],"+",s[4:])
+}
+
 func main() {
 	//ptrapi1()
 	//ptrapi2()
 	//ptrapi4()
-	ptrapi5()
+	//ptrapi5()
+	//arrayapi()
+	//sliceapi1()
+	//sliceapi2()
+	sliceapi3()
 }
+
+
