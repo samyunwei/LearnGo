@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"image/color"
+	"strings"
+	"sort"
 )
 
 type composer struct {
@@ -13,6 +15,11 @@ type composer struct {
 type rectangle struct {
 	x0, y0, x1, y1 int
 	fill           color.RGBA
+}
+
+type Product struct {
+	name  string
+	price float64
 }
 
 func swapAndProduct1(x, y, product *int) {
@@ -38,6 +45,51 @@ func inflate(numbers []int, factor int) {
 func resizeRect(rect *rectangle, width, height int) {
 	(*rect).x1 += width
 	rect.y1 += height
+}
+
+func (product Product) String() string {
+	return fmt.Sprintf("%s (%.2f)", product.name, product.price)
+}
+
+func InsertStringSliceCopy(slice, insetion []string, index int) []string {
+	result := make([]string, len(slice)+len(insetion))
+	at := copy(result, slice[:index])
+	at += copy(result[at:], insetion)
+	copy(result[at:], slice[index:])
+	return result
+}
+
+func InsertStringSLice(slice, insertion []string, index int) []string {
+	return append(slice[:index], append(insertion, slice[index:]...)...)
+}
+
+func RemoveStringSliceCopy(slice []string, start, end int) []string {
+	result := make([]string, len(slice)-(end-start))
+	at := copy(result, slice[:start])
+	copy(result[at:], slice[end:])
+	return result
+}
+
+func RemoveStringSlice(slice []string, start, end int) []string {
+	return append(slice[:start], slice[end:]...)
+}
+
+func SortFoldedStrings(slice []string) {
+	sort.Sort(FoldedStrings(slice))
+}
+
+type FoldedStrings []string
+
+func (slice FoldedStrings) Len() int {
+	return len(slice)
+}
+
+func (slice FoldedStrings) Less(i, j int) bool {
+	return strings.ToLower(slice[i]) < strings.ToLower(slice[j])
+}
+
+func (slice FoldedStrings) Swap(i, j int) {
+	slice[i], slice[j] = slice[j], slice[i]
 }
 
 func ptrapi1() {
@@ -88,56 +140,176 @@ func ptrapi6() {
 	fmt.Println(rect)
 }
 
-func arrayapi()  {
+func arrayapi() {
 	var buffer [20]byte
 	var grid1 [3][3]int
-	grid1[1][0],grid1[1][1],grid1[1][2] = 8,6,2
-	grid2 := [3][3]int{{4,3},{8,6,2}}
-	citites := [...]string{"Shanghai","Mumbau","Istanbul","Beijing"}
+	grid1[1][0], grid1[1][1], grid1[1][2] = 8, 6, 2
+	grid2 := [3][3]int{{4, 3}, {8, 6, 2}}
+	citites := [...]string{"Shanghai", "Mumbau", "Istanbul", "Beijing"}
 	citites[len(citites)-1] = "Karachi"
 	fmt.Println("Type Len Contents")
-	fmt.Printf("%-8T %2d %v\n",buffer,len(buffer),buffer)
-	fmt.Printf("%-8T %2d %v\n",citites,len(citites),citites)
-	fmt.Printf("%-8T %2d %v\n",grid1,len(grid1),grid1)
-	fmt.Printf("%-8T %2d %v\n",grid2,len(grid2),grid2)
+	fmt.Printf("%-8T %2d %v\n", buffer, len(buffer), buffer)
+	fmt.Printf("%-8T %2d %v\n", citites, len(citites), citites)
+	fmt.Printf("%-8T %2d %v\n", grid1, len(grid1), grid1)
+	fmt.Printf("%-8T %2d %v\n", grid2, len(grid2), grid2)
 
 }
 
-func sliceapi1()  {
-	s := []string{"A","B","C","D","E","F","G"}
+func sliceapi1() {
+	s := []string{"A", "B", "C", "D", "E", "F", "G"}
 	t := s[:5]
 	u := s[3:len(s)-1]
-	fmt.Print(s,t,u)
+	fmt.Print(s, t, u)
 	u[1] = "X"
-	fmt.Println(s,t,u)
+	fmt.Println(s, t, u)
 }
 
-func sliceapi2(){
+func sliceapi2() {
 	s := new([7]string)[:]
-	s[0],s[1],s[2],s[3],s[4],s[5],s[6] = "A","B","C","D","E","F","G"
-	buffer := make([]byte,20,60)
-	grid1 := make([][]int,3)
-	for i := range grid1{
-		grid1[i] = make([]int,3)
+	s[0], s[1], s[2], s[3], s[4], s[5], s[6] = "A", "B", "C", "D", "E", "F", "G"
+	buffer := make([]byte, 20, 60)
+	grid1 := make([][]int, 3)
+	for i := range grid1 {
+		grid1[i] = make([]int, 3)
 	}
-	grid1[1][0],grid1[1][1],grid1[1][2] = 8,6,2
-	grid2 := [][]int{{4,3},{8,6,2},{0,0,0}}
-	citites := []string{"Shanghai","Mumbau","Istanbul","Beijing"}
+	grid1[1][0], grid1[1][1], grid1[1][2] = 8, 6, 2
+	grid2 := [][]int{{4, 3}, {8, 6, 2}, {0, 0, 0}}
+	citites := []string{"Shanghai", "Mumbau", "Istanbul", "Beijing"}
 	citites[len(citites)-1] = "Karachi"
 	fmt.Println("Type Len Contents")
-	fmt.Printf("%-8T %2d %v\n",buffer,len(buffer),buffer)
-	fmt.Printf("%-8T %2d %v\n",citites,len(citites),citites)
-	fmt.Printf("%-8T %2d %v\n",grid1,len(grid1),grid1)
-	fmt.Printf("%-8T %2d %v\n",grid2,len(grid2),grid2)
+	fmt.Printf("%-8T %2d %v\n", buffer, len(buffer), buffer)
+	fmt.Printf("%-8T %2d %v\n", citites, len(citites), citites)
+	fmt.Printf("%-8T %2d %v\n", grid1, len(grid1), grid1)
+	fmt.Printf("%-8T %2d %v\n", grid2, len(grid2), grid2)
 }
 
-func sliceapi3(){
-	s := []string{"A","B","C","D","E","F","G"}
+func sliceapi3() {
+	s := []string{"A", "B", "C", "D", "E", "F", "G"}
 	t := s[2:6]
-	fmt.Println(t,s,"=",s[:4],"+",s[4:])
+	fmt.Println(t, s, "=", s[:4], "+", s[4:])
 	s[3] = "x"
 	t[len(t)-1] = "y"
-	fmt.Println(t,s,"=",s[:4],"+",s[4:])
+	fmt.Println(t, s, "=", s[:4], "+", s[4:])
+}
+
+func sliceapi4() {
+	amounts := []float64{237.81, 261.87, 273.93, 279.99, 281.07, 303.17, 231.47, 227.33, 209.23, 197.09}
+	sum := 0.0
+	for _, amount := range amounts {
+		sum += amount
+	}
+	fmt.Printf("∑ %.1f -> %.1f\n", amounts, sum)
+}
+
+func sliceapi5() {
+	amounts := []float64{237.81, 261.87, 273.93, 279.99, 281.07, 303.17, 231.47, 227.33, 209.23, 197.09}
+	sum := 0.0
+	for i := range amounts {
+		amounts[i] *= 1.05
+		sum += amounts[i]
+	}
+	fmt.Printf("∑ %.1f -> %.1f\n", amounts, sum)
+}
+
+func sliceapi6() {
+	products := []*Product{{"Spanner", 3.99}, {"Wrench", 2.49}, {"Screwdirver", 1.99}}
+	fmt.Println(products)
+	for _, product := range products {
+		product.price += 0.50
+	}
+	fmt.Println(products)
+
+}
+
+func sliceapi7() {
+	s := []string{"A", "B", "C", "D", "E", "F"}
+	t := []string{"K", "L", "M", "N"}
+	u := []string{"m", "n", "o", "p", "q", "r"}
+	s = append(s, "h", "i", "j")
+	s = append(s, t...)
+	s = append(s, u[2:5]...)
+	b := []byte{'U', 'V'}
+	letters := "XWY"
+	b = append(b, letters...)
+	fmt.Printf("%v\n%s\n", s, b)
+}
+
+func sliceapi8() {
+	s := []string{"M", "N", "O", "P", "Q", "R"}
+	x := InsertStringSliceCopy(s, []string{"a", "b", "c"}, 0)
+	y := InsertStringSliceCopy(s, []string{"x", "y"}, 3)
+	z := InsertStringSliceCopy(s, []string{"z"}, len(s))
+	fmt.Printf("%v\n%v\n%v\n%v\n", s, x, y, z)
+}
+
+func sliceapi9() {
+	s := []string{"A", "B", "C", "D", "E", "F", "G"}
+	s = s[2:]
+	fmt.Println(s)
+}
+
+func sliceapi10() {
+	s := []string{"A", "B", "C", "D", "E", "F", "G"}
+	s = s[:4]
+	fmt.Println(s)
+}
+
+func sliceapi11() {
+	s := []string{"A", "B", "C", "D", "E", "F", "G"}
+	s = append(s[:1], s[5:]...)
+	fmt.Println(s)
+}
+
+func sliceapi12() {
+	s := []string{"A", "B", "C", "D", "E", "F", "G"}
+	x := RemoveStringSliceCopy(s, 0, 2)
+	y := RemoveStringSliceCopy(s, 1, 5)
+	z := RemoveStringSliceCopy(s, 4, len(s))
+	fmt.Printf("%v\n%v\n%v\n%v\n", s, x, y, z)
+
+}
+
+func sliceapi13() {
+	files := []string{"Test.conf", "uitl.go", "Makefile", "misc.go", "main.go"}
+	fmt.Printf("Unsorted:          %q\n", files)
+	sort.Strings(files)
+	fmt.Printf("Underlying bytes:          %q\n", files)
+	SortFoldedStrings(files)
+	fmt.Printf("Case insentitive:          %q\n", files)
+}
+
+func sliceapi14() {
+	files := []string{"Test.conf", "uitl.go", "Makefile", "misc.go", "main.go"}
+	target := "Makefile"
+	for i, file := range files {
+		if file == target {
+			fmt.Printf("found \"%s\" at files[%d]\n", file, i)
+			break
+		}
+	}
+}
+
+func sliceapi15() {
+	files := []string{"Test.conf", "uitl.go", "Makefile", "misc.go", "main.go"}
+	target := "Makefile"
+	sort.Strings(files)
+	fmt.Printf("%q\n", files)
+	i := sort.Search(len(files), func(i int) bool { return files[i] >= target })
+	if i < len(files) && files[i] == target {
+		fmt.Printf("found \"%s\" at files[%d]\n", files[i], i)
+	}
+}
+
+func sliceapi16() {
+	files := []string{"Test.conf", "uitl.go", "Makefile", "misc.go", "main.go"}
+	target := "makefile"
+	SortFoldedStrings(files)
+	fmt.Printf("%q\n", files)
+	caseInsensitiveCampare := func(i int) bool { return strings.ToLower(files[i]) >= target }
+	i := sort.Search(len(files), caseInsensitiveCampare)
+	if i <= len(files) && strings.EqualFold(files[i], target) {
+		fmt.Printf("found \"%s\" at files[%d]\n", files[i], i)
+	}
 }
 
 func main() {
@@ -148,7 +320,18 @@ func main() {
 	//arrayapi()
 	//sliceapi1()
 	//sliceapi2()
-	sliceapi3()
+	//sliceapi3()
+	//sliceapi4()
+	//sliceapi5()
+	//sliceapi6()
+	//sliceapi7()
+	//sliceapi8()
+	//sliceapi9()
+	//sliceapi10()
+	//sliceapi11()
+	//sliceapi12()
+	//sliceapi13()
+	//sliceapi14()
+	//sliceapi15()
+	sliceapi16()
 }
-
-
