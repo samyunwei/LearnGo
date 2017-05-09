@@ -22,6 +22,14 @@ type Product struct {
 	price float64
 }
 
+type Point struct {
+	x, y, z int
+}
+
+func (point Point) String() string {
+	return fmt.Sprintf("(%d,%d,%d)", point.x, point.y, point.z)
+}
+
 func swapAndProduct1(x, y, product *int) {
 	if *x > *y {
 		*x, *y = *y, *x
@@ -312,6 +320,101 @@ func sliceapi16() {
 	}
 }
 
+func mapapi() {
+	massforPlanet := make(map[string]float64)
+	massforPlanet["Mercurt"] = 0.06
+	massforPlanet["Venus"] = 0.82
+	massforPlanet["Earth"] = 1.00
+	massforPlanet["Mars"] = 0.11
+	fmt.Println(massforPlanet)
+}
+
+func mapapi2() {
+	triangle := make(map[*Point]string, 3)
+	triangle[&Point{89, 47, 27}] = "a"
+	triangle[&Point{86, 65, 86}] = "b"
+	triangle[&Point{7, 44, 45}] = "r"
+	fmt.Println(triangle)
+}
+
+func mapapi3() {
+	triangle := make(map[Point]string, 3)
+	triangle[Point{89, 47, 27}] = "x"
+	triangle[Point{86, 65, 86}] = "y"
+	fmt.Println(triangle)
+}
+
+func mapapi4() {
+	populationForCity := map[string]int{"Istanbul": 12610000, "Karachi": 10620000, "Mumbai": 12690000, "Shanghai": 13680000}
+	for city, popluation := range populationForCity {
+		fmt.Printf("%-10s %8d\n", city, popluation)
+	}
+}
+
+func mapapi5() {
+	populationForCity := map[string]int{"Istanbul": 12610000, "Karachi": 10620000, "Mumbai": 12690000, "Shanghai": 13680000}
+	popluation := populationForCity["Mumbai"]
+	fmt.Println("Mumbai's poplation is ", popluation)
+	popluation = populationForCity["Emerald City"]
+	fmt.Println("Emerald City's poplation is ", popluation)
+
+}
+
+func mapapi6() {
+	populationForCity := map[string]int{"Istanbul": 12610000, "Karachi": 10620000, "Mumbai": 12690000, "Shanghai": 13680000}
+	city := "Istanbul"
+	if population, found := populationForCity[city]; found {
+		fmt.Printf("%s's population is %d \n", city, population)
+	} else {
+		fmt.Printf("%s's popluation data is unavailable\n", city)
+	}
+	city = "Emerald City"
+	_, prsent := populationForCity[city]
+	fmt.Printf("%q is in the map == %t\n", city, prsent)
+}
+
+func mapapi7() {
+	populationForCity := map[string]int{"Istanbul": 12610000, "Karachi": 10620000, "Mumbai": 12690000, "Shanghai": 13680000}
+	fmt.Println(len(populationForCity), populationForCity)
+	delete(populationForCity, "Shanghai")
+	fmt.Println(len(populationForCity), populationForCity)
+	populationForCity["Karachi"] = 11620000
+	fmt.Println(len(populationForCity), populationForCity)
+	populationForCity["Beijing"] = 11290000
+	fmt.Println(len(populationForCity), populationForCity)
+}
+
+func mapapi8() {
+	populationForCity := map[string]int{"Istanbul": 12610000, "Karachi": 10620000, "Mumbai": 12690000, "Shanghai": 13680000}
+	oldKey, newKey := "Beijing", "Tokyo"
+	value := populationForCity[oldKey]
+	delete(populationForCity, oldKey)
+	populationForCity[newKey] = value + 1
+	fmt.Println(len(populationForCity), populationForCity)
+}
+
+func mapapi9() {
+	populationForCity := map[string]int{"Istanbul": 12610000, "Karachi": 10620000, "Mumbai": 12690000, "Shanghai": 13680000}
+	cities := make([]string, 0, len(populationForCity))
+	for city := range populationForCity {
+		cities = append(cities, city)
+	}
+	sort.Strings(cities)
+	for _, city := range cities {
+		fmt.Printf("%-10s %8d\n", city, populationForCity[city])
+	}
+
+}
+
+func mapapi10() {
+	populationForCity := map[string]int{"Istanbul": 12610000, "Karachi": 10620000, "Mumbai": 12690000, "Shanghai": 13680000}
+	citiesForPopulation := make(map[int]string, len(populationForCity))
+	for city, population := range populationForCity {
+		citiesForPopulation[population] = city
+	}
+	fmt.Println(citiesForPopulation)
+}
+
 func main() {
 	//ptrapi1()
 	//ptrapi2()
@@ -333,5 +436,15 @@ func main() {
 	//sliceapi13()
 	//sliceapi14()
 	//sliceapi15()
-	sliceapi16()
+	//sliceapi16()
+	//mapapi()
+	//mapapi2()
+	//mapapi3()
+	//mapapi4()
+	//mapapi5()
+	//mapapi6()
+	//mapapi7()
+	//mapapi8()
+	//mapapi9()
+	mapapi10()
 }
