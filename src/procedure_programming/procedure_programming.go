@@ -65,6 +65,56 @@ func ArchiveFileList(file string) ([]string, error) {
 	return nil, errors.New("unrecognized archive")
 }
 
+func BundedInt(minimum, value, maximum int) int {
+	switch {
+	case value < minimum:
+		return minimum
+	case value > maximum:
+		return maximum
+	}
+	return value
+}
+
+func BundedInt2(minimum, value, maximum int) int {
+	switch {
+	case value < minimum:
+		return minimum
+	case value > maximum:
+		return maximum
+	default:
+		return value
+	}
+	panic("unreachable")
+}
+
+func ArchiveFileList2(file string) ([]string, error) {
+	switch suffix := Suffix(file); suffix {
+	case ".gz":
+		return GzipFileList(file)
+	case ".tar":
+		fallthrough
+	case ".tar.gz":
+		fallthrough
+	case ".tgz":
+		return TarFileList(file)
+	case ".zip":
+		return ZipFileList(file)
+	}
+	return nil, errors.New("unrecognized archive")
+}
+
+func ArchiveFileList3(file string) ([]string, error) {
+	switch suffix := Suffix(file); suffix {
+	case ".gz", ".tar", ".tar.gz":
+		return GzipFileList(file)
+	case ".tgz":
+		return TarFileList(file)
+	case ".zip":
+		return ZipFileList(file)
+	}
+	return nil, errors.New("unrecognized archive")
+}
+
 func main() {
 	//typeassert();
 	classicIF();
