@@ -182,9 +182,82 @@ func reverseJson() {
 	}
 }
 
+type State struct {
+	Name     string
+	Senators []string
+	Water    float64
+	Area     int
+}
+
+func (state State) String() string {
+	var senators []string
+	for _, senator := range state.Senators {
+		senators = append(senators, fmt.Sprintf("%q", senator))
+	}
+	return fmt.Sprintf(
+		`{"name": %q, "area":%d, "water":%f,"senators":[%s]}`, state.Name, state.Area, state.Water, strings.Join(senators, ", "))
+}
+
+func reverseJson2() {
+	var state State
+	MA := []byte(`{"name": "Massachusetts", "area":27336, "water":25.7,"senators":["John Kerry","Scott Brown"]}`)
+	if err := json.Unmarshal(MA, &state); err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(state)
+}
+
+func testfor(table [][]int, x int) {
+	found := false
+	for row := range table {
+		for column := range table[row] {
+			if table[row][column] == x {
+				found = true
+				break
+			}
+		}
+		if found {
+			break
+		}
+	}
+}
+
+func testfor2(table [][]int, x int) {
+FOUND:
+	for row := range table {
+		for column := range table[row] {
+			if table[row][column] == x {
+				break FOUND
+			}
+		}
+	}
+}
+
+func createCounter(start int) chan int {
+	next := make(chan int)
+	go func(i int) {
+		for {
+			next <- i
+			i++
+		}
+	}(start)
+	return next
+}
+
+func testchannel() {
+	counterA := createCounter(2)
+	counterB := createCounter(102)
+	for i := 0; i < 5; i++ {
+		a := <-counterA
+		fmt.Printf("(A-> %d,B ->%d)", a, <-counterB)
+	}
+	fmt.Println()
+}
 func main() {
 	//typeassert();
 	//classicIF();
 	//classifier(5,-17.9,"ZIP",nil,true,complex(1,1))
-	reverseJson()
+	//reverseJson()
+	//reverseJson2()
+	testchannel()
 }
