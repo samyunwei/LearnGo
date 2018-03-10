@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"encoding/json"
 	"bytes"
+	"math/rand"
 )
 
 func typeassert() {
@@ -253,11 +254,91 @@ func testchannel() {
 	}
 	fmt.Println()
 }
+func testselect() {
+	channels := make([]chan bool, 6)
+	for i := range channels {
+		channels[i] = make(chan bool)
+	}
+	go func() {
+		for {
+			channelid := rand.Intn(6)
+			channels[channelid] <- true
+			//fmt.Printf("channelid:%d\n",channelid)
+		}
+	}()
+
+	for i := 0; i < 36; i++ {
+		var x int
+		select {
+		case <-channels[0]:
+			x = 1
+		case <-channels[1]:
+			x = 2
+		case <-channels[2]:
+			x = 3
+		case <-channels[3]:
+			x = 4
+		case <-channels[4]:
+			x = 5
+		case <-channels[5]:
+			x = 6
+		}
+		fmt.Printf("%d", x)
+	}
+	fmt.Println()
+}
+
+type Data struct {
+}
+
+func expensiveComputation(data Data, answer chan int, done chan bool) {
+	finished := false
+	for !finished {
+		result := 2
+		answer <- result
+	}
+	done <- true
+}
+
+func testexpensivecomputation() {
+	const allDone = 2
+	doneCount := 0
+	answera := make(chan int)
+	answerb := make(chan int)
+	defer func() {
+		close(answera)
+		close(answerb)
+	}()
+	done := make(chan bool)
+	defer func() {
+		close(done)
+	}()
+	var data1 Data
+	var data2 Data
+	go expensiveComputation(data1, answera, done)
+	go expensiveComputation(data2, answerb, done)
+	for doneCount != allDone {
+		var which, result int
+		select {
+		case result = <-answera:
+			which = 'a'
+		case result = <-answerb:
+			which = 'b'
+		case <-done:
+			doneCount++
+		}
+		if which != 0 {
+			fmt.Printf("%c -> %d", which, result)
+		}
+	}
+	fmt.Println()
+}
 func main() {
 	//typeassert();
 	//classicIF();
 	//classifier(5,-17.9,"ZIP",nil,true,complex(1,1))
 	//reverseJson()
 	//reverseJson2()
-	testchannel()
+	//testchannel()
+	testselect()
 }
