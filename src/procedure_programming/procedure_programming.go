@@ -8,6 +8,10 @@ import (
 	"encoding/json"
 	"bytes"
 	"math/rand"
+	"os"
+	"log"
+	"math"
+	"net/http"
 )
 
 func typeassert() {
@@ -333,6 +337,58 @@ func testexpensivecomputation() {
 	}
 	fmt.Println()
 }
+func testdefer(filename string) {
+	var file *os.File
+	var err error
+	if file, err = os.Open(filename); err != nil {
+		log.Println("failed to open the file", err)
+		return
+	}
+	defer file.Close()
+}
+
+func ConvertInt64ToInt(x int64) int {
+	if math.MinInt32 <= x && x <= math.MaxInt32 {
+		return int(x)
+	}
+	panic(fmt.Sprintf("%d is out of the int32 range", x))
+}
+
+func IntFromInt64(x int64) (i int, err error) {
+	defer func() {
+		if e := recover(); e != nil {
+			err = fmt.Errorf("%v", e)
+		}
+	}()
+	i = ConvertInt64ToInt(x)
+	return i, nil
+}
+func homepage(writer http.ResponseWriter, request *http.Request) {
+	defer func() {
+		if x := recover(); x != nil {
+			log.Printf("[%v] caught panic: %v", request.RemoteAddr, x)
+		}
+	}()
+}
+
+func testdefer2() {
+	http.HandleFunc("/", homepage)
+	if err := http.ListenAndServe(":9091", nil); err != nil {
+		log.Fatal("failed to start server", err)
+	}
+}
+
+func logPanics(function func(http.ResponseWriter, *http.Request)) func(http.ResponseWriter, *http.Request) {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		defer func() {
+			if x := recover(); x != nil {
+				log.Printf("[%v] caught panic: %v", request.RemoteAddr, x)
+			}
+		}()
+		function(writer, request)
+	}
+}
+
 func main() {
 	//typeassert();
 	//classicIF();
